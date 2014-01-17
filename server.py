@@ -1,7 +1,7 @@
 import thread
 import socket
 
-class SocketServer:
+class gSocketServer:
     def __init__(self, addr = '127.0.0.1', port = 4000):
         self.ADDR = addr
         self.PORT = port
