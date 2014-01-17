@@ -1,7 +1,7 @@
 import Ser
 
 if __name__ == "__main__":
-    serverRun = Ser.SocketServer()
+    serverRun = Ser.chatServer()
     serverRun.start()
     hint = '''
     0 to 'exit'
