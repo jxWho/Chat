@@ -2,9 +2,13 @@ import thread
 import socket
 
 class gSocketServer:
-    def __init__(self, addr = '127.0.0.1', port = 4000):
+    def __init__(self,
+                addr = '127.0.0.1',
+                port = 4000,
+                autoChangeAddress = True):
         self.ADDR = addr
         self.PORT = port
+        self.autoChangeAddress = autoChangeAddress
         self.ADDRESS = (self.ADDR, self.PORT)
         self.currentUsers = []
         self.listenFlag = False
@@ -13,7 +17,20 @@ class gSocketServer:
     def _createSocket(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(self.ADDRESS)
+        while True:
+            try:
+                self.sock.bind(self.ADDRESS)
+            except socket.error:
+                if self.autoChangeAddress:
+                    self.PORT += 1
+                    self.ADDRESS = (self.ADDR, self.PORT)
+                    continue
+                else:
+                # dont want to increase port automatically
+                    raise socket.error
+            # bind successfully
+            break
+
         self.sock.listen(5)
 
     def _closeSocket(self):
@@ -64,10 +81,10 @@ class gSocketServer:
                 tmpString += (str(ts) + '\n')
             conn.send(tmpString)
         elif message == '2':
-            return 'Ok, test'
+            conn.send('Ok, test')
         else:
             # don't know yet
-            pass
+            conn.send('what is it?')
         #
         conn.send( welcomeMessage )
 
@@ -85,6 +102,10 @@ class gSocketServer:
                 self.listenFlag = False
 
         self._closeSocket()
+        thread.exit()
 
     def start(self):
-        thread.start_new_thread(self._runCode,())
+        try:
+            thread.start_new_thread(self._runCode,())
+        except:
+            pass
