@@ -105,7 +105,4 @@ class gSocketServer:
         thread.exit()
 
     def start(self):
-        try:
-            thread.start_new_thread(self._runCode,())
-        except:
-            pass
+            self._runCode()

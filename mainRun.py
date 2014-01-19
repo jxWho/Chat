@@ -1,8 +1,9 @@
 import Ser
+import thread
 
 if __name__ == "__main__":
     serverRun = Ser.chatServer()
-    serverRun.start()
+    thread.start_new_thread( serverRun.start, ())
     hint = '''
     0 to 'exit'
     1 to see current clients
